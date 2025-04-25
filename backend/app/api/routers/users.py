@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from typing import Any
 
-from app.core.schemas import UserRegister
+from app.core.schemas import UserRegister, UserLogin
 from app.deps import SessionDep
 from app import crud
+from app.core.security import verify_password
 
 router = APIRouter(prefix="/users")
 
@@ -16,3 +17,4 @@ def user_register(session: SessionDep, user_in: UserRegister) -> Any:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
