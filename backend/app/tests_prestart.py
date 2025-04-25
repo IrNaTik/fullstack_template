@@ -8,6 +8,9 @@ print(sys.path[0])
 
 from app.models import User
 from app.core.db import engine
+from app.core.security import get_password_hash
+from app.crud import create_user
+from app.core.schemas import UserRegister
 
 fake = Faker()
 
@@ -17,34 +20,35 @@ def generate_user_data():
 def seed_data():
     users_data = [
         {
-            "name": "Alice",
-            "emails": ["alice@example.com", "alice.work@example.com"]
+            "password": "12343243242",
+            "email": "1aaacddcc@example.com"
         },
         {
-            "name": "Bob",
-            "emails": ["bob@example.com"]
-        },
-        {
-            "name": "Charlie",
-            "fullname": "Charlie Robintson",
-            "emails": []
+            "password": "1234324324",
+            "email": "1aaabdddb@example.com"
         }
     ]
-    with Session(engine) as session:
-        for udata in users_data:
-            user = User()
-            user_data = {
-                "name": udata["name"],
-                "fullname": udata.get("fullname")  # None, если нет
-            }
-            # Удаляем ключи с None, если хотите не передавать их вовсе
-            user_data = {k: v for k, v in user_data.items() if v is not None}
-            user = User(**user_data)
-            user.addresses = [Address(email_address=email) for email in udata["emails"]]
-            session.add(user)
+    
+    session = Session(engine)
+    with session.begin():
+        with session.begin_nested():
+            for udata in users_data:
+                user_data = UserRegister(
+                        password=udata["password"],
+                        email=udata["email"]
+                )
 
-        session.commit()
-
+                try:
+                    user = create_user(session=session, user_register=user_data, auto_commit=False)
+                except ValueError as e:
+                    print(e)
+            session.rollback()
+        # The nested transaction will be released here automatically
+    # The outer transaction will be committed here automatically
+    
+            
+        
+        
 
 if __name__ == "__main__":
     seed_data()
