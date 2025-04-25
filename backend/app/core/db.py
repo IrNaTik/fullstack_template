@@ -3,6 +3,6 @@ from app.core.config import settings
 
 from app.models import Base
 
-engine = create_engine(settings.SQLALCHEMY_DATABASE_URL)
+engine = create_engine(settings.SQLALCHEMY_DATABASE_URL, echo=True)
 
 # Base.metadata.create_all(engine)

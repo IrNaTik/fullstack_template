@@ -22,12 +22,12 @@ class User(Base):
     #addresses: Mapped[list["Address"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     is_active: Mapped[bool] = mapped_column(default=True)
     is_superuser: Mapped[bool] = mapped_column(default=False)
     full_name: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     #password: str = Field(min_length=8, max_length=40)
-    hashed_password: Mapped[str] = mapped_column(String, nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     items: Mapped[list["Items"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 class Items(Base):

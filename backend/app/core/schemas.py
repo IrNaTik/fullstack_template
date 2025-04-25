@@ -14,3 +14,4 @@ class UserRegister(BaseModel):
     full_name: str | None = Field(default=None, max_length=255)
 
 
+
