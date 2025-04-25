@@ -22,5 +22,16 @@ def create_user(*, session: Session, user_create: UserCreate) -> User:
     return db_obj
 
 def get_user_by_email(session: Session, email: str) -> User | None:
+<<<<<<< Updated upstream
     statement = select(User).where(email=email)
     res = session.execute(statement=statement)
+=======
+    statement = select(User).where(User.email==email)
+    result = session.execute(statement=statement).scalar_one_or_none()
+    return result
+
+def get_user_by_id(session: Session, user_id: str) -> User | None:
+    statement = select(User).where(User.id==user_id)
+    result = session.execute(statement=statement).scalar_one_or_none()
+    return result
+>>>>>>> Stashed changes

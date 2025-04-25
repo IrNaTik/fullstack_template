@@ -1,13 +1,23 @@
 from fastapi import APIRouter
 from typing import Any
 
-from app.core.schemas import UserRegister
+from app.core.schemas import UserRegister, UserLogin
 from app.deps import SessionDep
 
 from app import crud
+from app.core.security import verify_password
 
 router = APIRouter(prefix="/users")
 
 @router.post("/signup")
 def user_register(session: SessionDep, user_in: UserRegister) -> Any:
-    user = crud.
+    try:
+        user = crud.create_user(session=session, user_register=user_in)
+        return {"message": "User created successfully", "user_id": user.id}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+
