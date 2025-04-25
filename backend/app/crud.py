@@ -5,22 +5,26 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models import User
-
-#from sqlmodel import Session, select
-
-#from app.core.security import get_password_hash, verify_password
-#from app.models import Item, ItemCreate, User, UserCreate, UserUpdate
+from app.core.security import get_password_hash
+from app.core.schemas import UserRegister
 
 
-def create_user(*, session: Session, user_create: UserCreate) -> User:
-    db_obj = User.model_validate(
-        user_create, update={"hashed_password": get_password_hash(user_create.password)}
+def create_user(*, session: Session, user_register: UserRegister, auto_commit: bool = True) -> User:
+    # Check if user already exists
+    if get_user_by_email(session, user_register.email):
+        raise ValueError("Email already registered")
+    
+    db_obj = User(
+        email=user_register.email,
+        full_name=user_register.full_name,
+        hashed_password=get_password_hash(user_register.password)
     )
     session.add(db_obj)
-    session.commit()
-    session.refresh(db_obj)
+    if auto_commit:
+        session.commit()
     return db_obj
 
 def get_user_by_email(session: Session, email: str) -> User | None:
-    statement = select(User).where(email=email)
-    res = session.execute(statement=statement)
+    statement = select(User).where(User.email==email)
+    result = session.execute(statement=statement).scalar_one_or_none()
+    return result
