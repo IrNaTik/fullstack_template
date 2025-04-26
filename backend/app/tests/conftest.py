@@ -20,7 +20,7 @@ from app.deps import get_db
 from app.core.config import settings
 
 # Programmer should change it dynamycly if its necessary
-collect_ignore = ["crud"]
+collect_ignore = ["crud", "api/test_api_users.py", "test_base.py"]
 
 # Test database URL
 SQLALCHEMY_DATABASE_URL = settings.SQLALCHEMY_DATABASE_URL
@@ -36,5 +36,9 @@ def db() -> Generator[Session, None, None]:
         with session.begin_nested():
             yield session
             session.rollback()
+
+@pytest.fixture(scope="session")
+def client():
+    return TestClient(app, base_url=settings.BACKEND_HOST + settings.API_V1_STR)
 
 

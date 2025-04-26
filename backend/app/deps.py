@@ -48,7 +48,7 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
         
-    user = crud.get_user_by_id(session, int(t.sub))
+    user = crud.get_user_by_id(session, int(payload["sub"]))
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
