@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic import Field
+from typing import List
 
 class PrivateUserCreate(BaseModel):
     email: str
@@ -16,6 +17,18 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr = Field(max_length=255)
     password: str = Field(min_length=8, max_length=40)
+
+class NewPassword(BaseModel):
+    token: str
+    new_password: str = Field(min_length=8, max_length=40)
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr = Field(max_length=255)
+
+class EmailData(BaseModel):
+    recipients: List[EmailStr]
+    subject: str
+    body: str
 
 
 
